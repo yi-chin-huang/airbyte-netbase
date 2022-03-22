@@ -13,6 +13,7 @@ export default class SchemaResource extends BaseResource implements Schema {
   readonly catalog: SyncSchema = { streams: [] };
   readonly id: string = "";
   readonly jobInfo?: JobInfo = undefined;
+  readonly catalogId = "";
 
   pk(): string {
     return this.id?.toString();
@@ -38,6 +39,7 @@ export default class SchemaResource extends BaseResource implements Schema {
           catalog: result.catalog,
           jobInfo: result.jobInfo,
           id: params.sourceId,
+          catalogId: result.catalogId,
         };
       },
       schema: this,

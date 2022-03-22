@@ -11,9 +11,11 @@ export const useDiscoverSchema = (
   isLoading: boolean;
   schema: SyncSchema;
   schemaErrorStatus: { status: number; response: JobInfo } | null;
+  catalogId: string;
   onDiscoverSchema: () => Promise<void>;
 } => {
   const [schema, setSchema] = useState<SyncSchema>({ streams: [] });
+  const [catalogId, setCatalogId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [schemaErrorStatus, setSchemaErrorStatus] = useState<{
     status: number;
@@ -28,6 +30,7 @@ export const useDiscoverSchema = (
     try {
       const data = await fetchDiscoverSchema({ sourceId: sourceId || "" });
       setSchema(data.catalog);
+      setCatalogId(data.catalogId);
     } catch (e) {
       setSchemaErrorStatus(e);
     } finally {
@@ -43,5 +46,5 @@ export const useDiscoverSchema = (
     })();
   }, [onDiscoverSchema, sourceId]);
 
-  return { schemaErrorStatus, isLoading, schema, onDiscoverSchema };
+  return { schemaErrorStatus, isLoading, schema, catalogId, onDiscoverSchema };
 };

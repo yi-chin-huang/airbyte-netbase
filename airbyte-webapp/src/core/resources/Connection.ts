@@ -43,6 +43,7 @@ export default class ConnectionResource
   readonly syncCatalog: SyncSchema = { streams: [] };
   readonly isSyncing: boolean = false;
   readonly operationIds: string[] = [];
+  readonly sourceCatalogId: string = "";
 
   pk(): string {
     return this.connectionId?.toString();

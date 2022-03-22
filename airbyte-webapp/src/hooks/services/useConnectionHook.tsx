@@ -42,6 +42,7 @@ type CreateConnectionProps = {
     | SourceDefinition
     | { name: string; sourceDefinitionId: string };
   destinationDefinition?: { name: string; destinationDefinitionId: string };
+  sourceCatalogId: string;
 };
 
 type UpdateConnection = {
@@ -126,6 +127,7 @@ const useConnection = (): {
     destination,
     sourceDefinition,
     destinationDefinition,
+    sourceCatalogId,
   }: CreateConnectionProps) => {
     try {
       const result = await createConnectionResource(
@@ -135,6 +137,7 @@ const useConnection = (): {
           destinationId: destination?.destinationId,
           ...values,
           status: "active",
+          sourceCatalogId: sourceCatalogId,
         },
         [
           [

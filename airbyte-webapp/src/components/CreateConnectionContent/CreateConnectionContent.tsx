@@ -54,6 +54,7 @@ const CreateConnectionContent: React.FC<IProps> = ({
     schema,
     isLoading,
     schemaErrorStatus,
+    catalogId,
     onDiscoverSchema,
   } = useDiscoverSchema(source.sourceId);
 
@@ -79,6 +80,7 @@ const CreateConnectionContent: React.FC<IProps> = ({
         name: destination?.name ?? "",
         destinationDefinitionId: destination?.destinationDefinitionId ?? "",
       },
+      sourceCatalogId: catalogId,
     });
 
     if (afterSubmitConnection) {
