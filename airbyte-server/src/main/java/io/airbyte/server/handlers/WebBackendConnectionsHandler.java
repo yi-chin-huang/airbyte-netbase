@@ -52,6 +52,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -181,18 +182,23 @@ public class WebBackendConnectionsHandler {
 
     final ConnectionRead connection = connectionsHandler.getConnection(connectionIdRequestBody.getConnectionId());
 
+    final Optional<AirbyteCatalog> discovered;
     if (MoreBooleans.isTruthy(webBackendConnectionRequestBody.getWithRefreshedCatalog())) {
       final SourceDiscoverSchemaRequestBody discoverSchemaReadReq =
           new SourceDiscoverSchemaRequestBody().sourceId(connection.getSourceId()).disableCache(true);
       final SourceDiscoverSchemaRead discoverSchema = schedulerHandler.discoverSchemaForSourceFromSourceId(discoverSchemaReadReq);
 
-      final AirbyteCatalog original = connection.getSyncCatalog();
-      final AirbyteCatalog discovered = discoverSchema.getCatalog();
-      final AirbyteCatalog combined = updateSchemaWithDiscovery(original, discovered);
-
-      connection.setSyncCatalog(combined);
+      discovered = Optional.of(discoverSchema.getCatalog());
+    } else {
+      discovered = connectionsHandler.getConnectionAirbyteCatalog(webBackendConnectionRequestBody.getConnectionId());
     }
-
+    final AirbyteCatalog original = connection.getSyncCatalog();
+    if (discovered.isPresent()) {
+      final AirbyteCatalog combined = updateSchemaWithDiscovery(original, discovered.get());
+      connection.setSyncCatalog(combined);
+    } else {
+      connection.setSyncCatalog(original);
+    }
     return buildWebBackendConnectionRead(connection);
   }
 
