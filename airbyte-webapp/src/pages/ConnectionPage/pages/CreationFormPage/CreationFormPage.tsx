@@ -17,9 +17,10 @@ import { useSourceDefinition } from "services/connector/SourceDefinitionService"
 import { useDestinationDefinition } from "services/connector/DestinationDefinitionService";
 import { useGetSource } from "hooks/services/useSourceHook";
 import { useGetDestination } from "hooks/services/useDestinationHook";
+// import SourceForm from "pages/SourcesPage/pages/CreateSourcePage/components/SourceForm";
 
 import DestinationForm from "./components/DestinationForm";
-import SourceForm from "./components/SourceForm";
+import ConnectionCreateSourceForm from "./components/ConnectionCreateSourceForm";
 import ExistingEntityForm from "./components/ExistingEntityForm";
 
 export enum StepsTypes {
@@ -118,7 +119,7 @@ const CreationFormPage: React.FC = () => {
             {type === EntityStepsTypes.CONNECTION && (
               <ExistingEntityForm type="source" onSubmit={onSelectExistingSource} />
             )}
-            <SourceForm
+            <ConnectionCreateSourceForm
               afterSubmit={() => {
                 if (type === "connection") {
                   setCurrentEntityStep(EntityStepsTypes.DESTINATION);
