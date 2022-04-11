@@ -5,6 +5,7 @@ import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
 import PageTitle from "components/PageTitle";
 import { FormPageContent } from "components/ConnectorBlocks";
 import HeadTitle from "components/HeadTitle";
+import DocumentationPanel from "components/DocsPanel";
 
 import useRouter from "hooks/useRouter";
 import { ConnectionConfiguration } from "core/domain/connection";
@@ -55,6 +56,8 @@ const CreateSourcePage: React.FC = () => {
     }, 2000);
   };
 
+  const selectedService = sourceDefinitions.find((item) => item.sourceDefinitionId === sourceDefinitionId);
+
   return (
     <>
       <HeadTitle titles={[{ id: "sources.newSourceTitle" }]} />
@@ -75,8 +78,12 @@ const CreateSourcePage: React.FC = () => {
           </FormPageContent>{" "}
         </ReflexElement>
         <ReflexSplitter />
-        <ReflexElement className="right-pane" maxSize={800}>
-          {sourceDefinitionSpecification ? <div>DISPLAY THE DOCS FOR THAT SOURCE</div> : <div>SELECT A SOURCE</div>}
+        <ReflexElement className="right-pane" flex={!selectedService ? 0 : 0.5} maxSize={800}>
+          <DocumentationPanel
+            onClose={() => null}
+            selectedService={selectedService}
+            documentationUrl={selectedService?.documentationUrl || ""}
+          />
         </ReflexElement>
       </ReflexContainer>
     </>
