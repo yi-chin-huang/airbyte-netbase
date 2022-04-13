@@ -5,7 +5,7 @@ import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
 import PageTitle from "components/PageTitle";
 import { FormPageContent } from "components/ConnectorBlocks";
 import HeadTitle from "components/HeadTitle";
-import DocumentationPanel from "components/DocsPanel";
+import DocumentationPanel from "components/DocumentationPanel";
 
 import useRouter from "hooks/useRouter";
 import { ConnectionConfiguration } from "core/domain/connection";
@@ -16,9 +16,8 @@ import { useGetSourceDefinitionSpecificationAsync } from "services/connector/Sou
 import SourceForm from "./components/SourceForm";
 
 const CreateSourcePage: React.FC = () => {
-  const { location } = useRouter();
+  const { location, push } = useRouter();
 
-  const { push } = useRouter();
   const [successRequest, setSuccessRequest] = useState(false);
 
   const { sourceDefinitions } = useSourceDefinitionList();
@@ -42,7 +41,7 @@ const CreateSourcePage: React.FC = () => {
     isLoading,
   } = useGetSourceDefinitionSpecificationAsync(sourceDefinitionId);
 
-  const onSubmitSourceStep = async (values: {
+  const onSubmitSourceForm = async (values: {
     name: string;
     serviceType: string;
     connectionConfiguration?: ConnectionConfiguration;
@@ -61,13 +60,12 @@ const CreateSourcePage: React.FC = () => {
   return (
     <>
       <HeadTitle titles={[{ id: "sources.newSourceTitle" }]} />
-      <PageTitle withLine title={<FormattedMessage id="sources.newSourceTitle" />} />
-      {/* todo: undesired behavior on screen resize */}
       <ReflexContainer orientation="vertical" windowResizeAware={true}>
         <ReflexElement className="left-pane">
+          <PageTitle withLine title={<FormattedMessage id="sources.newSourceTitle" />} />
           <FormPageContent>
             <SourceForm
-              onSubmit={onSubmitSourceStep}
+              onSubmit={onSubmitSourceForm}
               sourceDefinitions={sourceDefinitions}
               setSourceDefinitionId={setSourceDefinitionId}
               sourceDefinitionSpecification={sourceDefinitionSpecification}
@@ -78,12 +76,16 @@ const CreateSourcePage: React.FC = () => {
           </FormPageContent>{" "}
         </ReflexElement>
         <ReflexSplitter />
-        <ReflexElement className="right-pane" flex={!selectedService ? 0 : 0.5} maxSize={800}>
-          <DocumentationPanel
-            onClose={() => null}
-            selectedService={selectedService}
-            documentationUrl={selectedService?.documentationUrl || ""}
-          />
+        <ReflexElement className="right-pane" maxSize={800}>
+          {selectedService ? (
+            <DocumentationPanel
+              onClose={() => null}
+              selectedService={selectedService}
+              documentationUrl={selectedService?.documentationUrl || ""}
+            />
+          ) : (
+            "GET STARTED"
+          )}
         </ReflexElement>
       </ReflexContainer>
     </>

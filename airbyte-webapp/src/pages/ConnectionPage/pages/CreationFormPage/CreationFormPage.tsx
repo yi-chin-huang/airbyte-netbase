@@ -19,8 +19,8 @@ import { useGetSource } from "hooks/services/useSourceHook";
 import { useGetDestination } from "hooks/services/useDestinationHook";
 // import SourceForm from "pages/SourcesPage/pages/CreateSourcePage/components/SourceForm";
 
-import DestinationForm from "./components/DestinationForm";
-import ConnectionCreateSourceForm from "./components/ConnectionCreateSourceForm";
+import DestinationForm from "./components/ConnectionDestinationForm";
+import ConnectionCreateSourceForm from "./components/ConnectionSourceForm";
 import ExistingEntityForm from "./components/ExistingEntityForm";
 
 export enum StepsTypes {

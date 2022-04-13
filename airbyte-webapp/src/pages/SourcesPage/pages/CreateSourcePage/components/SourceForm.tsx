@@ -26,14 +26,6 @@ type SourceFormProps = {
   isLoading: boolean;
 };
 
-// const hasSourceDefinitionId = (state: unknown): state is { sourceDefinitionId: string } => {
-//   return (
-//     typeof state === "object" &&
-//     state !== null &&
-//     typeof (state as { sourceDefinitionId?: string }).sourceDefinitionId === "string"
-//   );
-// };
-
 const SourceForm: React.FC<SourceFormProps> = ({
   onSubmit,
   sourceDefinitions,
