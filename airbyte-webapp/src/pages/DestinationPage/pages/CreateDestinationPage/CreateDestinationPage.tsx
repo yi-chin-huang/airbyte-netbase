@@ -5,7 +5,7 @@ import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
 import PageTitle from "components/PageTitle";
 import { FormPageContent } from "components/ConnectorBlocks";
 import HeadTitle from "components/HeadTitle";
-import DocumentationPanel from "components/DocumentationPanel";
+import DocumentationPanel from "components/DocumentationPanel/DocumentationPanel";
 
 import useRouter from "hooks/useRouter";
 import { ConnectionConfiguration } from "core/domain/connection";
