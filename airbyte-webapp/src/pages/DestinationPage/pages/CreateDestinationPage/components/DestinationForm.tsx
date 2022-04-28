@@ -1,12 +1,12 @@
 import React from "react";
 import { FormattedMessage } from "react-intl";
 
-import { createFormErrorMessage } from "utils/errorStatusMessage";
 import { ConnectionConfiguration } from "core/domain/connection";
-import { useAnalyticsService } from "hooks/services/Analytics/useAnalyticsService";
-import { LogsRequestError } from "core/request/LogsRequestError";
-import { ConnectorCard } from "views/Connector/ConnectorCard";
 import { DestinationDefinition, DestinationDefinitionSpecification } from "core/domain/connector";
+import { LogsRequestError } from "core/request/LogsRequestError";
+import { useAnalyticsService } from "hooks/services/Analytics/useAnalyticsService";
+import { createFormErrorMessage } from "utils/errorStatusMessage";
+import { ConnectorCard } from "views/Connector/ConnectorCard";
 
 type DestinationFormProps = {
   onSubmit: (values: {

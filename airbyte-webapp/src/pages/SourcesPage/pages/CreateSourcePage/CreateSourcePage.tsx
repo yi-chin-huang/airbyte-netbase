@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
 
-import PageTitle from "components/PageTitle";
 import { FormPageContent } from "components/ConnectorBlocks";
-import HeadTitle from "components/HeadTitle";
 import DocumentationPanel from "components/DocumentationPanel/DocumentationPanel";
+import HeadTitle from "components/HeadTitle";
+import PageTitle from "components/PageTitle";
 
-import useRouter from "hooks/useRouter";
 import { ConnectionConfiguration } from "core/domain/connection";
-import { useSourceDefinitionList } from "services/connector/SourceDefinitionService";
 import { useCreateSource } from "hooks/services/useSourceHook";
+import useRouter from "hooks/useRouter";
+import { useSourceDefinitionList } from "services/connector/SourceDefinitionService";
 import { useGetSourceDefinitionSpecificationAsync } from "services/connector/SourceDefinitionSpecificationService";
 
 import SourceForm from "./components/SourceForm";
