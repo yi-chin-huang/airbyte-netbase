@@ -9,6 +9,7 @@ import io.airbyte.config.FailureReason;
 import io.airbyte.config.FailureReason.FailureOrigin;
 import io.airbyte.config.FailureReason.FailureType;
 import io.airbyte.config.Metadata;
+import io.airbyte.config.StandardSyncOutput;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -44,6 +45,14 @@ public class FailureHelper {
     return genericFailure(t, jobId, attemptNumber)
         .withFailureOrigin(FailureOrigin.DESTINATION)
         .withExternalMessage("Something went wrong within the destination connector");
+  }
+
+  public static FailureReason checkFailure(final Throwable t, final Long jobId, final Integer attemptNumber, FailureReason.FailureOrigin origin) {
+    return genericFailure(t, jobId, attemptNumber)
+        .withFailureOrigin(origin)
+        .withFailureType(FailureReason.FailureType.CONFIG_ERROR)
+        .withRetryable(false)
+        .withExternalMessage(String.format("%s check failed", origin));
   }
 
   public static FailureReason replicationFailure(final Throwable t, final Long jobId, final Integer attemptNumber) {
