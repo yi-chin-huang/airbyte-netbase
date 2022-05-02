@@ -9,7 +9,6 @@ import io.airbyte.config.FailureReason;
 import io.airbyte.config.FailureReason.FailureOrigin;
 import io.airbyte.config.FailureReason.FailureType;
 import io.airbyte.config.Metadata;
-import io.airbyte.config.StandardSyncOutput;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
