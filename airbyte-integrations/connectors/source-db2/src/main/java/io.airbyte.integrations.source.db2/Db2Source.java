@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableMap;
 import io.airbyte.commons.functional.CheckedFunction;
 import io.airbyte.commons.json.Jsons;
+import io.airbyte.db.factory.DatabaseDriver;
 import io.airbyte.db.jdbc.JdbcDatabase;
 import io.airbyte.db.jdbc.streaming.AdaptiveStreamingQueryConfig;
 import io.airbyte.integrations.base.IntegrationRunner;
@@ -33,7 +34,7 @@ import org.slf4j.LoggerFactory;
 public class Db2Source extends AbstractJdbcSource<JDBCType> implements Source {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Db2Source.class);
-  public static final String DRIVER_CLASS = "com.ibm.db2.jcc.DB2Driver";
+  public static final String DRIVER_CLASS = DatabaseDriver.DB2.getDriverClassName();
   public static final String USERNAME = "username";
   public static final String PASSWORD = "password";
 
@@ -53,9 +54,9 @@ public class Db2Source extends AbstractJdbcSource<JDBCType> implements Source {
 
   @Override
   public JsonNode toDatabaseConfig(final JsonNode config) {
-    final StringBuilder jdbcUrl = new StringBuilder(String.format("jdbc:db2://%s:%s/%s",
+    final StringBuilder jdbcUrl = new StringBuilder(String.format(DatabaseDriver.DB2.getUrlFormatString(),
         config.get("host").asText(),
-        config.get("port").asText(),
+        config.get("port").asInt(),
         config.get("db").asText()));
 
     var result = Jsons.jsonNode(ImmutableMap.builder()

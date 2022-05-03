@@ -8,7 +8,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import io.airbyte.commons.json.Jsons;
-import io.airbyte.db.Databases;
+import io.airbyte.db.factory.DataSourceFactory;
+import io.airbyte.db.jdbc.DefaultJdbcDatabase;
 import io.airbyte.db.jdbc.JdbcDatabase;
 import io.airbyte.integrations.base.JavaBaseConstants;
 import io.airbyte.integrations.destination.ExtendedNameTransformer;
@@ -97,10 +98,10 @@ public class ClickhouseDestinationStrictEncryptAcceptanceTest extends Destinatio
   }
 
   @Override
-  protected List<JsonNode> retrieveRecords(TestDestinationEnv testEnv,
-                                           String streamName,
-                                           String namespace,
-                                           JsonNode streamSchema)
+  protected List<JsonNode> retrieveRecords(final TestDestinationEnv testEnv,
+                                           final String streamName,
+                                           final String namespace,
+                                           final JsonNode streamSchema)
       throws Exception {
     return retrieveRecordsFromTable(namingResolver.getRawTableName(streamName), namespace)
         .stream()
@@ -133,15 +134,17 @@ public class ClickhouseDestinationStrictEncryptAcceptanceTest extends Destinatio
         config.get("host").asText(),
         config.get("port").asText(),
         config.get("database").asText());
-    return Databases.createJdbcDatabase(
+    return new DefaultJdbcDatabase(DataSourceFactory.create(
         config.get("username").asText(),
         config.has("password") ? config.get("password").asText() : null,
-        jdbcStr,
-        ClickhouseDestination.DRIVER_CLASS);
+        ClickhouseDestination.DRIVER_CLASS,
+        jdbcStr
+      )
+    );
   }
 
   @Override
-  protected void setup(TestDestinationEnv testEnv) {
+  protected void setup(final TestDestinationEnv testEnv) {
     db = (ClickHouseContainer) new ClickHouseContainer("yandex/clickhouse-server")
         .withExposedPorts(HTTP_PORT, NATIVE_PORT, HTTPS_PORT, NATIVE_SECURE_PORT)
         .withClasspathResourceMapping("config.xml", "/etc/clickhouse-server/config.xml", BindMode.READ_ONLY)
@@ -156,7 +159,7 @@ public class ClickhouseDestinationStrictEncryptAcceptanceTest extends Destinatio
   }
 
   @Override
-  protected void tearDown(TestDestinationEnv testEnv) {
+  protected void tearDown(final TestDestinationEnv testEnv) {
     db.stop();
     db.close();
   }
