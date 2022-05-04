@@ -1,0 +1,26 @@
+{
+  "documentationUrl": "https://docsurl.com",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Python Http Api Spec",
+    "type": "object",
+    "required": ["account", "password"],
+    "additionalProperties": true,
+    "properties": {
+      "account": {
+        "title": "Netbase Insight API account",
+        "type": "string",
+        "example": "yhuang@netbase.com"
+      },
+      "password": {
+        "title": "Netbase Insight API password",
+        "type": "string",
+        "airbyte_secret": true
+      },
+      "language": {
+        "title": "Hello World Language",
+        "type": "string"
+      }
+    }
+  }
+}
