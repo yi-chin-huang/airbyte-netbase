@@ -182,18 +182,17 @@ class Employees(IncrementalNetbaseInsightApiStream):
 
 # Source
 class SourceNetbaseInsightApi(AbstractSource):
+    config_key_account = "account"
+    config_key_password = "password"
+
     def check_connection(self, logger, config) -> Tuple[bool, any]:
-        """
-        TODO: Implement a connection check to validate that the user-provided config can be used to connect to the underlying API
+        connection_check_url = 'https://api.netbase.com/cb/insight-api/2/helloWorld?language=English'
+        response = requests.get(connection_check_url, auth=(config[self.config_key_account], config[self.config_key_password]))
+        if response.status_code == 200:
+            return True, None
+        else:
+            return False, "Invalid account or password."
 
-        See https://github.com/airbytehq/airbyte/blob/master/airbyte-integrations/connectors/source-stripe/source_stripe/source.py#L232
-        for an example.
-
-        :param config:  the user-input config object conforming to the connector's spec.yaml
-        :param logger:  logger object
-        :return Tuple[bool, any]: (True, None) if the input config can be used to connect to the API successfully, (False, error) otherwise.
-        """
-        return True, None
 
     def streams(self, config: Mapping[str, Any]) -> List[Stream]:
         """
