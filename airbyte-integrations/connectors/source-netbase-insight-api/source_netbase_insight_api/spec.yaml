@@ -1,13 +1,26 @@
-documentationUrl: https://docsurl.com
+documentationUrl: https://api.netbase.com/explorer/api/netbase
 connectionSpecification:
   $schema: http://json-schema.org/draft-07/schema#
   title: Netbase Insight Api Spec
   type: object
   required:
-    - TODO
+    - account
+    - password
+    - topic_ids
   additionalProperties: false
   properties:
-   # 'TODO: This schema defines the configuration required for the source. This usually involves metadata such as database and/or authentication information.':
-    TODO:
+    account:
+      title: Netbase App account
       type: string
-      description: describe me
+      example: user@netbase.com
+    password:
+      title: Netbase App password
+      type: string
+      airbyte_secret: true
+    topic_ids:
+      title: Topic IDs
+      type: array
+      items:
+        type: integer
+      example: [258363, 258357]
+      description: A list of Netbase App topic IDs
