@@ -10,7 +10,7 @@ import requests
 from airbyte_cdk.sources import AbstractSource
 from airbyte_cdk.sources.streams import Stream
 from airbyte_cdk.sources.streams.http import HttpStream
-from airbyte_cdk.sources.streams.http.auth import TokenAuthenticator
+from requests.auth import HTTPBasicAuth, AuthBase
 
 """
 TODO: Most comments in this class are instructive and should be deleted after the source is implemented.
@@ -56,7 +56,10 @@ class NetbaseInsightApiStream(HttpStream, ABC):
     """
 
     # TODO: Fill in the url base. Required.
-    url_base = "https://example-api.com/v1/"
+    url_base = "https://api.netbase.com/cb/insight-api/2/"
+
+    def __init__(self, authenticator: AuthBase, **kwargs):
+        super().__init__(authenticator=authenticator)
 
     def next_page_token(self, response: requests.Response) -> Optional[Mapping[str, Any]]:
         """
@@ -76,7 +79,7 @@ class NetbaseInsightApiStream(HttpStream, ABC):
         return None
 
     def request_params(
-        self, stream_state: Mapping[str, Any], stream_slice: Mapping[str, any] = None, next_page_token: Mapping[str, Any] = None
+            self, stream_state: Mapping[str, Any], stream_slice: Mapping[str, any] = None, next_page_token: Mapping[str, Any] = None
     ) -> MutableMapping[str, Any]:
         """
         TODO: Override this method to define any query parameters to be set. Remove this method if you don't need to define request params.
@@ -89,25 +92,41 @@ class NetbaseInsightApiStream(HttpStream, ABC):
         TODO: Override this method to define how a response is parsed.
         :return an iterable containing each record in the response
         """
-        yield {}
+        data = response.json()
+        for record in data:
+            yield record
 
-
-class Customers(NetbaseInsightApiStream):
+class Topics(NetbaseInsightApiStream):
     """
     TODO: Change class name to match the table/data source this stream corresponds to.
     """
 
     # TODO: Fill in the primary key. Required. This is usually a unique field in the stream, like an ID or a timestamp.
-    primary_key = "customer_id"
+    primary_key = "scope"  # interface
+    scope = "ALL"  # Default scope
+
+    def __init__(self, authenticator: AuthBase, scope: str, **kwargs):
+        super().__init__(authenticator=authenticator)
+        if scope:
+            self.scope = scope
 
     def path(
-        self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
+            self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
     ) -> str:
         """
         TODO: Override this method to define the path this stream corresponds to. E.g. if the url is https://example-api.com/v1/customers then this
         should return "customers". Required.
         """
-        return "customers"
+        return "topics"
+
+    def request_params(
+            self, stream_state: Mapping[str, Any], stream_slice: Mapping[str, any] = None, next_page_token: Mapping[str, Any] = None
+    ) -> MutableMapping[str, Any]:
+        """
+        TODO: Override this method to define any query parameters to be set. Remove this method if you don't need to define request params.
+        Usually contains common params e.g. pagination size etc.
+        """
+        return {self.primary_key: self.scope}
 
 
 # Basic incremental stream
@@ -184,15 +203,25 @@ class Employees(IncrementalNetbaseInsightApiStream):
 class SourceNetbaseInsightApi(AbstractSource):
     config_key_account = "account"
     config_key_password = "password"
+    config_key_scope = "scope"
 
     def check_connection(self, logger, config) -> Tuple[bool, any]:
+        """
+        TODO: Implement a connection check to validate that the user-provided config can be used to connect to the underlying API
+
+        See https://github.com/airbytehq/airbyte/blob/master/airbyte-integrations/connectors/source-stripe/source_stripe/source.py#L232
+        for an example.
+
+        :param config:  the user-input config object conforming to the connector's spec.yaml
+        :param logger:  logger object
+        :return Tuple[bool, any]: (True, None) if the input config can be used to connect to the API successfully, (False, error) otherwise.
+        """
         connection_check_url = 'https://api.netbase.com/cb/insight-api/2/helloWorld?language=English'
         response = requests.get(connection_check_url, auth=(config[self.config_key_account], config[self.config_key_password]))
         if response.status_code == 200:
             return True, None
         else:
             return False, "Invalid account or password."
-
 
     def streams(self, config: Mapping[str, Any]) -> List[Stream]:
         """
@@ -201,5 +230,8 @@ class SourceNetbaseInsightApi(AbstractSource):
         :param config: A Mapping of the user input configuration as defined in the connector spec.
         """
         # TODO remove the authenticator if not required.
-        auth = TokenAuthenticator(token="api_key")  # Oauth2Authenticator is also available if you need oauth support
-        return [Customers(authenticator=auth), Employees(authenticator=auth)]
+        auth = HTTPBasicAuth(config[self.config_key_account], config[self.config_key_password])
+        scope = None
+        if self.config_key_scope in config:
+            scope = config[self.config_key_scope]
+        return [Topics(authenticator=auth, scope=scope)]

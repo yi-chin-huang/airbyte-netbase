@@ -6,7 +6,6 @@ connectionSpecification:
   required:
     - account
     - password
-    - topic_ids
   additionalProperties: false
   properties:
     account:
@@ -17,10 +16,7 @@ connectionSpecification:
       title: Netbase App password
       type: string
       airbyte_secret: true
-    topic_ids:
-      title: Topic IDs
-      type: array
-      items:
-        type: integer
-      example: [258363, 258357]
-      description: A list of Netbase App topic IDs
+    scope:
+      title: The scope of topics to be fetched
+      type: string
+      description: Specify USER to access topics authored by the currently logged-in user, ORG to access public topics authored by all account users, GLOBAL to access topics authored by NetBase, or ALL to access all topics available to the currently logged-in user. The default is ALL.
