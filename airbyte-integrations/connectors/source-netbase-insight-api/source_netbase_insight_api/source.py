@@ -96,38 +96,6 @@ class NetbaseInsightApiStream(HttpStream, ABC):
         for record in data:
             yield record
 
-class Topics(NetbaseInsightApiStream):
-    """
-    TODO: Change class name to match the table/data source this stream corresponds to.
-    """
-
-    # TODO: Fill in the primary key. Required. This is usually a unique field in the stream, like an ID or a timestamp.
-    primary_key = "scope"  # interface
-    scope = "ALL"  # Default scope
-
-    def __init__(self, authenticator: AuthBase, scope: str, **kwargs):
-        super().__init__(authenticator=authenticator)
-        if scope:
-            self.scope = scope
-
-    def path(
-            self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
-    ) -> str:
-        """
-        TODO: Override this method to define the path this stream corresponds to. E.g. if the url is https://example-api.com/v1/customers then this
-        should return "customers". Required.
-        """
-        return "topics"
-
-    def request_params(
-            self, stream_state: Mapping[str, Any], stream_slice: Mapping[str, any] = None, next_page_token: Mapping[str, Any] = None
-    ) -> MutableMapping[str, Any]:
-        """
-        TODO: Override this method to define any query parameters to be set. Remove this method if you don't need to define request params.
-        Usually contains common params e.g. pagination size etc.
-        """
-        return {self.primary_key: self.scope}
-
 
 # Basic incremental stream
 class IncrementalNetbaseInsightApiStream(NetbaseInsightApiStream, ABC):
@@ -156,6 +124,55 @@ class IncrementalNetbaseInsightApiStream(NetbaseInsightApiStream, ABC):
         the current state and picks the 'most' recent cursor. This is how a stream's state is determined. Required for incremental.
         """
         return {}
+
+
+class Topics(IncrementalNetbaseInsightApiStream):
+    """
+    TODO: Change class name to match the table/data source this stream corresponds to.
+    """
+
+    # TODO: Fill in the primary key. Required. This is usually a unique field in the stream, like an ID or a timestamp.
+    primary_key = "scope"  # interface
+    scope = "ALL"  # Default scope
+    cursor_field = "topicId"
+    max_recorded_topicId = 0
+
+    def __init__(self, authenticator: AuthBase, scope: str, **kwargs):
+        super().__init__(authenticator=authenticator)
+        if scope:
+            self.scope = scope
+
+    def path(
+            self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
+    ) -> str:
+        """
+        TODO: Override this method to define the path this stream corresponds to. E.g. if the url is https://example-api.com/v1/customers then this
+        should return "customers". Required.
+        """
+        return "topics"
+
+    def request_params(
+            self, stream_state: Mapping[str, Any], stream_slice: Mapping[str, any] = None, next_page_token: Mapping[str, Any] = None
+    ) -> MutableMapping[str, Any]:
+        """
+        TODO: Override this method to define any query parameters to be set. Remove this method if you don't need to define request params.
+        Usually contains common params e.g. pagination size etc.
+        """
+        return {self.primary_key: self.scope}
+
+    @property
+    def state(self) -> Mapping[str, Any]:
+        return {self.cursor_field: self.max_recorded_topicId}
+
+    @state.setter
+    def state(self, value: Mapping[str, Any]):
+        self.max_recorded_topicId = value[self.cursor_field]
+
+    def read_records(self, *args, **kwargs) -> Iterable[Mapping[str, Any]]:
+        for record in super().read_records(*args, **kwargs):
+            current_topicId = int(record[self.cursor_field])
+            self.max_recorded_topicId = max(self.max_recorded_topicId, current_topicId)
+            yield record
 
 
 class Employees(IncrementalNetbaseInsightApiStream):

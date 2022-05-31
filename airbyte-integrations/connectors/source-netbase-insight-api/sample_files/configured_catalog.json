@@ -54,14 +54,14 @@
                 "type": "string"
               },
               "topicId": {
-                "type": "string"
+                "type": "integer"
               }
             }
           }
         },
         "supported_sync_modes": ["full_refresh"]
       },
-      "sync_mode": "full_refresh",
+      "sync_mode": "incremental",
       "destination_sync_mode": "overwrite"
     }
   ]
