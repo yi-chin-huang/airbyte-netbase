@@ -1,0 +1,88 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "topics",
+        "json_schema": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "contentType": {
+                "type": "string"
+              },
+              "createDate": {
+                "type": "string"
+              },
+              "displayImgUrl": {
+                "type": "string"
+              },
+              "editDate": {
+                "type": "string"
+              },
+              "fhTwitterStatus": {
+                "type": "string"
+              },
+              "fromDate": {
+                "type": "string"
+              },
+              "languageFilters": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "owner": {
+                "type": "object",
+                "properties": {
+                  "userProfileId": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "sharing": {
+                "type": "string"
+              },
+              "timeInterval": {
+                "type": "string"
+              },
+              "toDate": {
+                "type": "string"
+              },
+              "topicId": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "supported_sync_modes": ["full_refresh", "incremental"]
+      },
+      "sync_mode": "incremental",
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "hello_world",
+        "json_schema": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "type": "object",
+          "properties": {
+            "language": {
+              "type": "string"
+            },
+            "message": {
+              "type": "string"
+            }
+          }
+        },
+        "supported_sync_modes": ["full_refresh"]
+      },
+      "sync_mode": "incremental",
+      "destination_sync_mode": "overwrite"
+    }
+  ]
+}

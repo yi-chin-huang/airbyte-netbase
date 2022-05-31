@@ -127,6 +127,43 @@ class IncrementalNetbaseInsightApiStream(NetbaseInsightApiStream, ABC):
         return {}
 
 
+class HelloWorld(NetbaseInsightApiStream):
+    """
+    TODO: Change class name to match the table/data source this stream corresponds to.
+    """
+
+    # TODO: Fill in the primary key. Required. This is usually a unique field in the stream, like an ID or a timestamp.
+    primary_key = "language"  # interface
+    language = "English"
+
+    def __init__(self, authenticator: AuthBase, language: str, **kwargs):
+        super().__init__(authenticator=authenticator)
+        if language:
+            self.language = language
+
+    def path(
+            self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
+    ) -> str:
+        """
+        TODO: Override this method to define the path this stream corresponds to. E.g. if the url is https://example-api.com/v1/customers then this
+        should return "customers". Required.
+        """
+        return "helloWorld"
+
+    def request_params(
+            self, stream_state: Mapping[str, Any], stream_slice: Mapping[str, any] = None, next_page_token: Mapping[str, Any] = None
+    ) -> MutableMapping[str, Any]:
+        """
+        TODO: Override this method to define any query parameters to be set. Remove this method if you don't need to define request params.
+        Usually contains common params e.g. pagination size etc.
+        """
+        return {self.primary_key: self.language}
+
+    def parse_response(self, response: requests.Response, **kwargs) -> Iterable[Mapping]:
+        # The response is a single object, but we need to return an iterable object
+        return [response.json()]
+
+
 class Topics(IncrementalNetbaseInsightApiStream, IncrementalMixin):
     """
     TODO: Change class name to match the table/data source this stream corresponds to.
@@ -183,6 +220,7 @@ class SourceNetbaseInsightApi(AbstractSource):
     config_key_account = "account"
     config_key_password = "password"
     config_key_scope = "scope"
+    config_key_language = "language"
 
     def check_connection(self, logger, config) -> Tuple[bool, any]:
         """
@@ -213,4 +251,7 @@ class SourceNetbaseInsightApi(AbstractSource):
         scope = None
         if self.config_key_scope in config:
             scope = config[self.config_key_scope]
-        return [Topics(authenticator=auth, scope=scope)]
+        language = None
+        if self.config_key_language in config:
+            language = config[self.config_key_language]
+        return [Topics(authenticator=auth, scope=scope), HelloWorld(authenticator=auth, language=language)]

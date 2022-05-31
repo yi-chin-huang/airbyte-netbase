@@ -20,3 +20,8 @@ connectionSpecification:
       title: The scope of topics to be fetched
       type: string
       description: Specify USER to access topics authored by the currently logged-in user, ORG to access public topics authored by all account users, GLOBAL to access topics authored by NetBase, or ALL to access all topics available to the currently logged-in user. The default is ALL.
+    language:
+      title: The language for the hello world enpoint
+      type: string
+      description: The default value is "English"
+      example: Spanish
